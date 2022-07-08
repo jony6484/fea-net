@@ -29,7 +29,7 @@ def make_tensors(df):
     heights_fft_amp = torch.tensor(np.abs(fft(heights.numpy())))
     heights_fft_ang = torch.tensor(np.angle(fft(heights.numpy())))
     # data = torch.concat([pressures[:, :, None], heights[:, :, None], heights_fft_amp[:, :, None], heights_fft_ang[:, :, None]], dim=2)
-    data = torch.concat([pressures[:, :, None], heights[:, :, None]], dim=2)
+    data = torch.cat([pressures[:, :, None], heights[:, :, None]], dim=2)
     data_mean = data.mean(dim=(0,1))
     data_std = data.std(dim=(0,1))
     data = (data - data_mean) / data_std

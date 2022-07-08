@@ -2,6 +2,8 @@ import numpy as np
 import torch
 from copy import deepcopy
 from sklearn.metrics import r2_score
+import wandb
+import src.consts as consts
 
 def train_model(train_loader, test_loader, net, loss_fun, optimizer, device, num_epochs=2):
     """
@@ -15,6 +17,12 @@ def train_model(train_loader, test_loader, net, loss_fun, optimizer, device, num
     :param num_epochs: num_epochs
     :return: the training states and the model at its best state
     """
+    # Setting up logging
+    wandb.init(project=consts.PROJECT_NAME)
+    wandb.config = {"learning_rate": consts.LEARNING_RATE,
+                    "epochs": num_epochs,
+                    "batch_size": consts.BATCH_SIZE}
+    wandb.watch(models=net, log='all')
     checkpoint_text = ""
     train_loss, test_loss, train_metric, test_metric = [], [], [], []
     best_model = {'test_metric': -1e16, 'epoch': -1, 'net': None}
@@ -40,6 +48,8 @@ def train_model(train_loader, test_loader, net, loss_fun, optimizer, device, num
                   f'|loss:{batch_loss[ii]:0.3e}|metric:{batch_metric[ii]:0.3f}', end='\r')
         train_loss.append(np.mean(batch_loss))
         train_metric.append(np.mean(batch_metric))
+        wandb.log({"train_loss": train_loss[-1]})
+        wandb.log({"train_metric": train_metric[-1]})
         net.eval()
         with torch.no_grad():
             batch_loss = []
@@ -53,6 +63,8 @@ def train_model(train_loader, test_loader, net, loss_fun, optimizer, device, num
                 batch_metric.append(100*r2_score(y.cpu(), y_hat.detach().cpu()))
             test_loss.append(np.mean(batch_loss))
             test_metric.append(np.mean(batch_metric))
+            wandb.log({"test_loss": test_loss[-1]})
+            wandb.log({"test_metric": test_metric[-1]})
         if test_metric[-1] > best_model['test_metric']:
             best_model['test_metric'] = test_metric[-1]
             best_model['epoch'] = epoch_i
