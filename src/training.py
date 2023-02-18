@@ -37,7 +37,6 @@ def train_model(train_loader, test_loader, net, loss_fun, optimizer, device, num
             y = y.to(device)
             y_hat = net(X)
             loss = loss_fun(y_hat, y)
-
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
