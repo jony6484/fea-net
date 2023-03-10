@@ -1,0 +1,21 @@
+training_params:
+  test_size: 0.2
+  batch_size: 256
+  lr: 0.0004
+  sequence_len: 120
+  h_max: 400
+  schedueler: false
+  model: 'lstm'
+  num_epochs: 1000
+  continue_last_run: false
+
+lstm_params:
+  lstm_hidden_dim: 350
+  fc_hidden_dim: 300
+  bidi: true
+  num_layers: 3
+
+cnn_params:
+  conv_1_out_chs: 16
+  conv_2_out_chs: 32
+  conv_3_out_chs: 64
